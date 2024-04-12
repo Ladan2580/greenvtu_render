@@ -25,14 +25,10 @@ mongoose.connect(mongo_connect_string, {
   useUnifiedTopology: true
 }).then(result=>console.log('connected to the database')).catch(err=>console.log(err))
 
-const sessionStore = new MongoStore({
-  mongooseConnection: mongoose.connection,
-  collection: 'sessions' // Name of the collection to store session data
-});
 
 app.use(session({
   secret: '1210210009',
-  store: sessionStore,
+  store: MongoStore.create({ mongoUrl: mongo_connect_string, ttl: 14 * 24 * 60 * 60, autoRemove: 'native'}),
   resave: false,
   saveUninitialized: true
 }));
