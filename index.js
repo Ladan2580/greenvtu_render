@@ -25,7 +25,7 @@ mongoose.connect(mongo_connect_string, {
   useUnifiedTopology: true
 }).then(result=>console.log('connected to the database')).catch(err=>console.log(err))
 
-
+app.set('trust proxy', 1);
 app.use(session({
   secret: '1210210009',
   store: MongoStore.create({ mongoUrl: mongo_connect_string, ttl: 14 * 24 * 60 * 60, autoRemove: 'native'}),
