@@ -5,7 +5,7 @@ const session=require("express-session");
 const app=express();
 const cors =require('cors');
 const mongoose =require('mongoose');
-const MongoStore = require('connect-mongo')(session);
+const MongoStore = require('connect-mongo');
 app.use(cors(
   {
     origin:''+process.env.CLIENT_BASE_URL,
@@ -18,20 +18,23 @@ app.use(cookieparser());
 
 const port=process.env.PORT;
 const mongo_connect_string=process.env.MONGO_CONNECT_STRING;
-mongoose.connect(mongo_connect_string).then(result=>console.log('connected to the database')).catch(err=>console.log(err));
+//mongoose.connect(mongo_connect_string).then(result=>console.log('connected to the database')).catch(err=>console.log(err));
+
+mongoose.connect(mongo_connect_string, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(result=>console.log('connected to the database')).catch(err=>console.log(err))
 
 const sessionStore = new MongoStore({
-  // MongoDB connection options
-  url: mongo_connect_string,
-  autoRemove: 'native', // Automatically remove expired sessions
-  // Other options as needed
+  mongooseConnection: mongoose.connection,
+  collection: 'sessions' // Name of the collection to store session data
 });
 
 app.use(session({
   secret: '1210210009',
-  resave: false,
-  saveUninitialized: false,
   store: sessionStore,
+  resave: false,
+  saveUninitialized: true
 }));
 
 const my_router=require('./routes/education_setting_route')
