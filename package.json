@@ -4,8 +4,9 @@
   "description": "my project",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start":"node index.js"
+    "start": "node index.js",
+    "dev":"npx nodemon",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Bashar Ladan",
   "license": "ISC",
