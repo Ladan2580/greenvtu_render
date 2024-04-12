@@ -2,7 +2,7 @@ require('dotenv').config();
 const express= require('express');
 const cookieparser= require("cookie-parser")
 const session=require("express-session");
-const connectMongo = require('connect-mongo')
+const MongoStore = require('connect-mongo')(session)
 const app=express();
 const cors =require('cors');
 require('dotenv').config()
@@ -21,15 +21,20 @@ const port=process.env.PORT;
 const mongo_connect_string=process.env.MONGO_CONNECT_STRING;
 mongoose.connect(mongo_connect_string).then(result=>console.log('connected to the database')).catch(err=>console.log(err));
 
-const MongoDBStore= connectMongo(session)
+const sessionOptions = {
+  secret: '1210210009',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 3600000,
+  },
+  store: new MongoStore({ url: mongo_connect_string }),
+}
 
-app.use(session({
-  secret:'1210210009',
-  resave:false,
-  saveUninitialized:true,
-  store: new MongoDBStore({url:mongo_connect_string, collection:'sessions'})
-  
-}))
+if (app.get('env') === 'production') {
+  sessionOptions.cookie.secure = true
+}
+app.use(session(sessionOptions))
 
 
 const my_router=require('./routes/education_setting_route')
