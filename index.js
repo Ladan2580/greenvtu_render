@@ -20,17 +20,18 @@ const port=process.env.PORT;
 const mongo_connect_string=process.env.MONGO_CONNECT_STRING;
 //mongoose.connect(mongo_connect_string).then(result=>console.log('connected to the database')).catch(err=>console.log(err));
 
-mongoose.connect(mongo_connect_string, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(result=>console.log('connected to the database')).catch(err=>console.log(err))
+mongoose.connect(mongo_connect_string).then(result=>console.log('connected to the database')).catch(err=>console.log(err))
 
 app.set('trust proxy', 1);
 app.use(session({
   secret: '1210210009',
   store: MongoStore.create({ mongoUrl: mongo_connect_string, ttl: 14 * 24 * 60 * 60, autoRemove: 'native'}),
-  resave: false,
-  saveUninitialized: true
+  resave: true,
+  saveUninitialized: false,
+  cookie:{
+    sameSite:'none',
+    secure: true
+  }
 }));
 
 const my_router=require('./routes/education_setting_route')
