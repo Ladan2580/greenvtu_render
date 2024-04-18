@@ -14,6 +14,14 @@ app.use(cors(
     credentials:true
   }
 ));
+app.use((req,res,next)=>{
+  const allow=['https://app.greenvtu.com.ng','https://greenvtu.com.ng','https://api.greenvtu.com.ng']
+const origin= req.headers.origin;
+if(allow.includes(origin)){
+  res.setHeader('Access-Control-Allow-Origin',origin);
+}
+next();
+})
 
 app.use(express.json());
 app.use(cookieparser());
