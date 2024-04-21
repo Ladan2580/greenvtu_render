@@ -9,7 +9,7 @@ const MongoStore = require('connect-mongo');
 
 app.use(cors(
   {
-    origin:''+process.env.CLIENT_BASE_URL,
+    origin:[`${process.env.CLIENT_BASE_URL}`,'https://a2zdataplug.com','https://fatizaradata.com','https://legitdataway.com','https://paylony.com','https://api.paylony.com'],
     methods:['POST','GET','PUT','OPTIONS','HEAD'],
     credentials:true
   }
