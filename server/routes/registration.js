@@ -437,25 +437,26 @@ const verifyToken = (req, res, next) => {
 };
 
 
-router.post("confidential/paylony", verifyToken, async (req, res) => {
+router.post("confidential/paylony", async (req, res) => {
 
   const { customer_email, amount, status } = req.body
-  if (status == "00") {
-    uuid = require('uuid').v4();
-    const myusers = await users.findOne({ email: customer_email })
-    const username = myusers.username;
-    const prev_bal = myusers.wallet;
-    const credit_amount = amount - 50;
+  StoreRecord.sendEmail('ladanbashargwandu@gmail.com', "Testing Paylony", `${req.body}`)
+  // if (status == "00") {
+  //   uuid = require('uuid').v4();
+  //   const myusers = await users.findOne({ email: customer_email })
+  //   const username = myusers.username;
+  //   const prev_bal = myusers.wallet;
+  //   const credit_amount = amount - 50;
 
-    const funded = await creditor.creditUser(username, credit_amount);
-    const new_bal = await creditor.getwallet(username);
-    const date = new Date();
+  //   const funded = await creditor.creditUser(username, credit_amount);
+  //   const new_bal = await creditor.getwallet(username);
+  //   const date = new Date();
 
-    const storing = await StoreRecord.storeWalletHistory(uuid, username, `Your wallet has been funded with ${credit_amount}`, credit_amount, prev_bal, new_bal, "success", date)
+  //   const storing = await StoreRecord.storeWalletHistory(uuid, username, `Your wallet has been funded with ${credit_amount}`, credit_amount, prev_bal, new_bal, "success", date)
 
-    res.status(200).send("success")
+  //   res.status(200).send("success")
 
-  }
+  // }
 
 })
 
