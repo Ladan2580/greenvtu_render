@@ -229,38 +229,70 @@ class StoreHistory {
         });
     }
 
-    async getAccount(fname,lname,username,email,phone,bankName){
-        
+    async getAccount(full_name, username, email, phone, bankName) {
+
+               
         const data = {
-            "firstname": fname,
-            "lastname": lname,
-            "address": "Magajin Gari Road",
-            "gender": "Male",
-            "email": email,
-            "phone": phone,
-            "dob": "1993-08-03",
-            "bvn": "",
-            "provider": bankName
-          }
-          const headers = {
-            Authorization: `Bearer ${process.env.PAYLONY_SK}`
-          }
-  
-         axios.post('https://api.paylony.com/api/v1/create_account', data, { headers })
-            .then(result=>{
-                const data=result.data
-                if(data.status){
-                    const{account_name,account_number,provider}=data.data
-                    this.storeBanks(username,account_number,account_name,provider)
-                }
-            
+            public_key: `${process.env.STW_PUBLIC}`,
+            email: `${email}`,
+            account_name: `${full_name}`,
+            phone: `${phone}`,
+            webhook_url: `${process.env.STW_WEBHOOK}`,
+          //  mode: 'sandbox'
+        }
+        
+       switch(bankName){
+        
+        case 'safehaven':{
+            axios.post(`https://strowallet.com/api/virtual-bank/new-customer/`, data)
+            .then(result => {
+            const mydata= result.data;
+//            console.log(mydata)
+
+                this.storeBanks(username,mydata.account_number,mydata.account_name, 'safehaven')
             }
             )
-            .catch(error => console.error(error.message))  
+            .catch(error => console.error(error.message))
+
+            break;
+
+        }
+
+        case 'providus':{
+            axios.post('https://strowallet.com/api/virtual-bank/providus', data)
+            .then(result => {
+            const mydata= result.data;
+       //     console.log(mydata)
+
+                this.storeBanks(username,mydata.account_number,mydata.account_name, 'providus')
+            }
+            )
+            .catch(error => console.error(error.message))
+
+            break;
+
+        }
+
+        case 'paga':{
+            axios.post(`https://strowallet.com/api/virtual-bank/paga`, data)
+            .then(result => {
+            const mydata= result.data;
+         //   console.log(mydata)
+
+                this.storeBanks(username,mydata.account_number,mydata.account_name, 'paga')
+            }
+            )
+            .catch(error => console.error(error.message))
+
+            break;
+
+        }
+
+
+       }
 
 
     }
-
 
 
 }

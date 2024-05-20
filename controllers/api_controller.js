@@ -52,7 +52,13 @@ class apis {
             });
 
             // res.json(response.data)
-            const { message, status } = response.data
+            let { message, status } = response.data
+
+            if(message=="Insufficient Balance, kindly fund your wallet and try again"){
+                message="Contact admin for support"
+            }
+
+
             //{
             //     "network": "MTN",
             //     "request-id": "Data_1234567890",
@@ -140,7 +146,12 @@ class apis {
                 }
             });
 
-            const { message, status } = response.data
+            let { message, status } = response.data
+
+            if(message=="Insufficient Balance, kindly fund your wallet and try again"){
+                message="Contact admin for support"
+            }
+
 
             //{
 
@@ -224,7 +235,12 @@ class apis {
                 }
             });
 
-            const { message, status } = response.data
+            let { message, status } = response.data
+
+            if(message=="Insufficient Balance, kindly fund your wallet and try again"){
+                message="Contact admin for support"
+            }
+
 
             // {
             //     "network": "MTN",
@@ -309,7 +325,12 @@ class apis {
                 }
             });
 
-            const { message, disco_name, token, status } = response.data;
+            let { message, disco_name, token, status } = response.data;
+
+            if(message=="Insufficient Balance, kindly fund your wallet and try again"){
+                message="Contact admin for support"
+            }
+
 
             // {
             //     "disco_name": "ADEX DISO",
@@ -386,7 +407,12 @@ class apis {
                 }
             });
 
-            const { message, pin, quantity, status } = response.data
+            let { message, pin, quantity, status } = response.data
+
+            if(message=="Insufficient Balance, kindly fund your wallet and try again"){
+                message="Contact admin for support"
+            }
+
             
             // {
             //     "username": "adex",
@@ -465,8 +491,14 @@ class apis {
                 }
             });
             
-            const { message, total_number, total_correct_number, total_wrong_number, status } =response.data 
+            let { message, total_number, total_correct_number, total_wrong_number, status } =response.data 
             
+            if(message=="Insufficient Balance, kindly fund your wallet and try again"){
+                message="Contact admin for support"
+            }
+
+
+
             // {
             //     "amount": 100,
             //     "newbal": 91607,

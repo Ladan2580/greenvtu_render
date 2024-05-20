@@ -48,6 +48,7 @@ const registerInput = [
   check("r_pwd").escape()
 ]
 
+
 const register = async (req, res) => {
 
 
@@ -83,9 +84,10 @@ const register = async (req, res) => {
         const fname = full_name.split(" ")[0]
         const lname = full_name.split(" ")[1]
         const url = null
- //      const bank1 = await StoreRecord.getAccount(fname, lname, username, email, phone, "providus");
-      //  const bank2 = await StoreRecord.getAccount(fname, lname, username, email, phone, "vfd");
-      //  const bank3 = await StoreRecord.getAccount(fname, lname, username, email, phone, "safehaven");
+      const bank1 = await StoreRecord.getAccount(full_name,username,email,phone,'');
+      const bank2 = await StoreRecord.getAccount(full_name,username,email,phone,'providus');
+      const bank3 = await StoreRecord.getAccount(full_name,username,email,phone,'paga');
+     
         const date = new Date();
 
         const hashPass = await bcrypt.hash(`${pwd}`, 6)
@@ -141,28 +143,26 @@ const login = async (req, res) => {
             req.session.username = username;
             req.session.save();
             const full_name = retrieveUsers.fullName
-           
-            const fname = full_name.split(" ")[0]
-            const lname = full_name.split(" ")[1]
-            const email = retrieveUsers.email;
-            const phone = retrieveUsers.phone;
+             const email = retrieveUsers.email;
+             const phone = retrieveUsers.phone;
 
             const bank1 = await bankModel.findOne({ username, bankName: "safehaven" });
             if (!bank1) {
 
-              const safehaven = await StoreRecord.getAccount(fname, lname, username, email, phone, "providus");
+              const safehaven = await StoreRecord.getAccount(full_name,username,email,phone,'safehaven');
 
             }
-            const bank2 = await bankModel.findOne({ username, bankName: "vfd" });
+            const bank2 = await bankModel.findOne({ username, bankName: "providus" });
             if(!bank2){
-              const vfd= await StoreRecord.getAccount(fname, lname, username, email, phone, "vfd");
-
+              const providus = await StoreRecord.getAccount(full_name,username,email,phone,'providus');
+      
             }
-            const bank3 = await bankModel.findOne({ username, bankName: "providus" });
-
+            const bank3 = await bankModel.findOne({ username, bankName: "paga" });
+           
             if(!bank3){
-              const providus= await StoreRecord.getAccount(fname, lname, username, email, phone, "providus");
-
+              
+              const paga = await StoreRecord.getAccount(full_name,username,email,phone, "paga");
+      
             }
             
             res.status(201).json({ success: "success", subject: "Login Successful!", message: "User login successful", path: "user" })
@@ -185,6 +185,7 @@ const login = async (req, res) => {
   }
 
 }
+
 
 
 
@@ -414,52 +415,42 @@ router.get("/authorization", async (req, res) => {
 
 })
 
-const verifyToken = (req, res, next) => {
-  // Check if Authorization header is present
-  const authHeader = req.headers['Authorization'];
-  if (typeof authHeader !== 'undefined') {
-    // Split token from 'Bearer'
-    const token = authHeader.split(' ')[1];
-    // Verify token
-    jwt.verify(token, '1210210009', (err, decoded) => {
-      if (err) {
-        // Token is invalid
-        return res.status(403).json({ error: 'Token is not valid' });
-      }
-      // Token is valid, attach decoded payload to request object
-      req.user = decoded;
-      next();
-    });
-  } else {
-    // Authorization header is missing
-    res.status(401).json({ error: 'Unauthorized' });
-  }
-};
+router.post("/stw/webhook",  async (req, res) => {  
 
-
-router.post("confidential/paylony", verifyToken, async (req, res) => {
-
-  const { customer_email, amount, status } = req.body
-  if (status == "00") {
+  const {sessionId,
+    accountNumber,
+    tranRemarks,
+    transactionAmount,
+    settledAmount,
+    feeAmount,
+    vatAmount,
+    currency,
+    initiationTranRef,
+    settlementId,
+    sourceAccountNumber,
+    sourceAccountName,
+    sourceBankName,
+    channelId,
+    tranDateTime
+  } = req.body
+  
     uuid = require('uuid').v4();
-    const myusers = await users.findOne({ email: customer_email })
-    const username = myusers.username;
+    const acct = await bankModel.findOne({accountNumber});
+    const username=acct.username;
+    const myusers = await users.findOne({username});
+   // const username = myusers.username;
     const prev_bal = myusers.wallet;
-    const credit_amount = amount - 50;
-
+    const credit_amount = feeAmount - 50;
     const funded = await creditor.creditUser(username, credit_amount);
     const new_bal = await creditor.getwallet(username);
     const date = new Date();
-
     const storing = await StoreRecord.storeWalletHistory(uuid, username, `Your wallet has been funded with ${credit_amount}`, credit_amount, prev_bal, new_bal, "success", date)
+     res.status(200).send("success")
 
-    res.status(200).send("success")
-
-  }
-
+  
 })
 
-router.post("/services_providers/webhookendpoint", async (req, res) => {
+router.post("/data/webhook", async (req, res) => {
 
   const id = req.body["request-id"];
   const { status } = req.body;
@@ -474,8 +465,9 @@ router.post("/services_providers/webhookendpoint", async (req, res) => {
     const username = mywallet.username;
     const user_data = await users.findOne({ username })
     const url = user_data.webhook_url
+    const prev_bal = user_data.wallet;
     const requestBody = req.body;
-
+    
     if (url) {
       axios.post("" + url, requestBody)
         .then(response => console.log(response.data))
@@ -483,15 +475,17 @@ router.post("/services_providers/webhookendpoint", async (req, res) => {
 
     }
 
-    const prev_bal = creditor.getwallet(username)
     const funding = await creditor.creditUser(username, refund_amount);
-    const new_bal = await creditor.getwallet(username);
+    const dataBal = await users.findOne({ username })
+       const new_bal = dataBal.wallet
     const storing = await StoreRecord.storeWalletHistory(uuid, username, `You have have been refunded with the sum of ${refund_amount} due to a failed transaction with id ${id}`, refund_amount, prev_bal, new_bal, "success", date)
 
-    wallet_model.findOneAndUpdate({ id }, { status }, { new: true }).then(result => {
+    wallet_model.findOneAndUpdate({ id }, { status}, { new: true }).then(result => {
 
 
     })
+
+    res.status(200).send("success")
 
 
   }
@@ -499,6 +493,5 @@ router.post("/services_providers/webhookendpoint", async (req, res) => {
 
 
 })
-
 
 module.exports = router;
