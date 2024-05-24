@@ -475,8 +475,8 @@ const getRequest_user = async (req, res, next) => {
             res.json(result[0]);
 
         }
-        if (parameter === "vfd") {
-            const result = await bank.find({ username: req.session.username, bankName: "vfd" })
+        if (parameter === "paga") {
+            const result = await bank.find({ username: req.session.username, bankName: "paga" })
             res.json(result[0]);
 
         }
