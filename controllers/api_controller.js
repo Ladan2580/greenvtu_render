@@ -53,9 +53,10 @@ class apis {
 
             // res.json(response.data)
             let { message, status } = response.data
+            message= message.split(" ")[0]
 
-            if(message=="Insufficient Balance, kindly fund your wallet and try again"){
-                message="Contact admin for support"
+            if(message=="Insufficient"){
+                message="Contact Admin for support";
             }
 
 
@@ -147,9 +148,10 @@ class apis {
             });
 
             let { message, status } = response.data
+               message= message.split(" ")[0]
 
-            if(message=="Insufficient Balance, kindly fund your wallet and try again"){
-                message="Contact admin for support"
+            if(message=="Insufficient"){
+                message="Contact Admin for support";
             }
 
 
@@ -236,9 +238,10 @@ class apis {
             });
 
             let { message, status } = response.data
+message= message.split(" ")[0]
 
-            if(message=="Insufficient Balance, kindly fund your wallet and try again"){
-                message="Contact admin for support"
+            if(message=="Insufficient"){
+                message="Contact Admin for support";
             }
 
 
@@ -327,8 +330,10 @@ class apis {
 
             let { message, disco_name, token, status } = response.data;
 
-            if(message=="Insufficient Balance, kindly fund your wallet and try again"){
-                message="Contact admin for support"
+message= message.split(" ")[0]
+
+            if(message=="Insufficient"){
+                message="Contact Admin for support";
             }
 
 
@@ -409,8 +414,10 @@ class apis {
 
             let { message, pin, quantity, status } = response.data
 
-            if(message=="Insufficient Balance, kindly fund your wallet and try again"){
-                message="Contact admin for support"
+           message= message.split(" ")[0]
+
+            if(message=="Insufficient"){
+                message="Contact Admin for support";
             }
 
             
@@ -493,8 +500,10 @@ class apis {
             
             let { message, total_number, total_correct_number, total_wrong_number, status } =response.data 
             
-            if(message=="Insufficient Balance, kindly fund your wallet and try again"){
-                message="Contact admin for support"
+            message= message.split(" ")[0]
+
+            if(message=="Insufficient"){
+                message="Contact Admin for support";
             }
 
 
